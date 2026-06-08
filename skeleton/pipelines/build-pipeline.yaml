@@ -1,0 +1,49 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: ${{ values.imageStreamName }}
+  namespace: ${{ values.namespace }}
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: ${{ values.imageStreamName }}
+  namespace: ${{ values.namespace }}
+  labels:
+    app.kubernetes.io/name: ${{ values.componentId }}
+spec:
+  source:
+    type: Git
+    git:
+      uri: ${{ values.sourceRepoUrl }}
+      ref: ${{ values.sourceBranch }}
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: src/main/docker/Dockerfile.jvm
+  output:
+    to:
+      kind: ImageStreamTag
+      name: ${{ values.imageStreamName }}:latest
+  triggers:
+    - type: ConfigChange
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: ${{ values.componentId }}-pipeline
+  namespace: ${{ values.namespace }}
+spec:
+  params:
+    - name: git-url
+      default: ${{ values.sourceRepoUrl }}
+    - name: git-revision
+      default: ${{ values.sourceBranch }}
+  tasks:
+    - name: openshift-build
+      taskSpec:
+        steps:
+          - name: start-build
+            image: registry.redhat.io/openshift4/ose-cli:latest
+            script: |
+              oc start-build ${{ values.imageStreamName }} --from-repo=. --follow

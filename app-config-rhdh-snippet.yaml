@@ -1,0 +1,6 @@
+catalog:
+  rules:
+    - allow: [Component, System, API, Resource, Location, Template]
+  locations:
+    - type: url
+      target: https://raw.githubusercontent.com/<ORG>/<TEMPLATE_REPO>/main/template.yaml

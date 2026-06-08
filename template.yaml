@@ -1,0 +1,111 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: onboard-existing-quarkus-openshift
+  title: Onboard Existing Quarkus App to OpenShift
+  description: Cria um repositório GitOps/pipeline e registra uma aplicação Quarkus existente no Developer Hub.
+  tags:
+    - quarkus
+    - openshift
+    - gitops
+    - golden-template
+spec:
+  owner: platform-team
+  type: service
+
+  parameters:
+    - title: Dados da aplicação existente
+      required:
+        - componentId
+        - owner
+        - sourceRepoUrl
+        - namespace
+      properties:
+        componentId:
+          title: Nome da aplicação
+          type: string
+          default: canal-digital-quarkus
+          ui:field: EntityNamePicker
+        owner:
+          title: Dono da aplicação
+          type: string
+          default: group:default/developers
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group
+              - User
+        sourceRepoUrl:
+          title: Repositório de código fonte existente
+          type: string
+          default: https://github.com/raphaelmorsch/canal-digital-quarkus.git
+        sourceBranch:
+          title: Branch do código fonte
+          type: string
+          default: main
+        namespace:
+          title: Namespace de destino
+          type: string
+          default: canal-digital-dev
+        imageStreamName:
+          title: Nome do ImageStream/BuildConfig
+          type: string
+          default: canal-digital-quarkus-git
+        routeEnabled:
+          title: Criar rota pública via Knative Route
+          type: boolean
+          default: true
+
+    - title: Repositório GitOps a ser criado
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Onde criar o repositório GitOps
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  steps:
+    - id: fetch-base
+      name: Renderizar artefatos de plataforma
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          componentId: ${{ parameters.componentId }}
+          owner: ${{ parameters.owner }}
+          sourceRepoUrl: ${{ parameters.sourceRepoUrl }}
+          sourceBranch: ${{ parameters.sourceBranch }}
+          namespace: ${{ parameters.namespace }}
+          imageStreamName: ${{ parameters.imageStreamName }}
+          routeEnabled: ${{ parameters.routeEnabled }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+
+    - id: publish
+      name: Publicar repositório GitOps
+      action: publish:github
+      input:
+        allowedHosts:
+          - github.com
+        description: GitOps onboarding para ${{ parameters.componentId }}
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
+        repoVisibility: public
+
+    - id: register
+      name: Registrar no catálogo
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repositório GitOps criado
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Componente no catálogo
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

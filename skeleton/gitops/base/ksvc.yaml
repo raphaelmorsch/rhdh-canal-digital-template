@@ -1,0 +1,36 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: ${{ values.componentId }}
+  namespace: ${{ values.namespace }}
+  labels:
+    app.kubernetes.io/name: ${{ values.componentId }}
+    app.kubernetes.io/part-of: canal-digital
+    backstage.io/kubernetes-id: ${{ values.componentId }}
+  annotations:
+    app.openshift.io/route-disabled: "${{ not values.routeEnabled }}"
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"${{ values.imageStreamName }}:latest","namespace":"${{ values.namespace }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"${{ values.componentId }}\")].image","paused":false}]'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "5"
+    spec:
+      containers:
+        - name: ${{ values.componentId }}
+          image: image-registry.openshift-image-registry.svc:5000/${{ values.namespace }}/${{ values.imageStreamName }}:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: env-portal
+            - secretRef:
+                name: canal-digital-db
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 2Gi

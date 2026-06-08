@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-portal
+  namespace: ${{ values.namespace }}
+data:
+  QUARKUS_PROFILE: prod
+  DB_HOST: mssql
+  DB_PORT: "1433"
+  DB_NAME: canal_digital
+  CANAL_FEATURE_SIMULADOR_ECONOMIA: "true"
