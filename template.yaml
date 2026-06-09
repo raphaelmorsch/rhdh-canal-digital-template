@@ -85,7 +85,7 @@ spec:
           routeEnabled: ${{ parameters.routeEnabled }}
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
           repoUrl: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}.git
-          argoNamespace: openshift-gitops
+          argoNamespace: tssc-gitops
           argoProject: default
           argoPath: ./app-of-apps
 
@@ -104,7 +104,7 @@ spec:
       input:
         appName: ${{ parameters.componentId }}-app-of-apps
         argoInstance: default
-        namespace: openshift-gitops
+        namespace: tssc-gitops
         repoUrl: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}.git
         path: ./app-of-apps
 
