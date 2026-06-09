@@ -3,6 +3,7 @@ kind: Pipeline
 metadata:
   name: ${{ values.componentId }}
   labels:
+    backstage.io/kubernetes-id: ${{ values.componentId }}
     app.kubernetes.io/name: ${{ values.componentId }}
     pipeline.openshift.io/runtime: java
     pipeline.openshift.io/runtime-version: openjdk-17-ubi8

@@ -4,6 +4,8 @@ metadata:
   name: ${{ values.componentId }}
   description: Aplicação Quarkus onboardada via Golden Template para OpenShift.
   annotations:
+    backstage.io/kubernetes-id: ${{ values.componentId }}
+    backstage.io/kubernetes-namespace: ${{ values.namespace }}
     backstage.io/source-location: url:${{ values.sourceRepoUrl }}
     janus-idp.io/tekton: ${{ values.componentId }}
     argocd/app-name: ${{ values.componentId }}
