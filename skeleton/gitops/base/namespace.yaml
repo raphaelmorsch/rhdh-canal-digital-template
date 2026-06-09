@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${{ values.namespace }}
-  labels:
-    app.kubernetes.io/part-of: canal-digital
-    backstage.io/kubernetes-id: ${{ values.componentId }}
