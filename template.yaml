@@ -108,6 +108,30 @@ spec:
         repoUrl: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}.git
         path: ./app-of-apps
 
+    - id: start-pipeline
+      name: Disparar pipeline inicial
+      action: kubernetes:apply
+      input:
+        namespaced: true
+        namespace: ${{ parameters.namespace }}
+        manifest:
+          apiVersion: tekton.dev/v1
+          kind: PipelineRun
+          metadata:
+            name: ${{ parameters.componentId }}-initial-run
+          spec:
+            pipelineRef:
+              name: ${{ parameters.componentId }}
+            workspaces:
+              - name: workspace
+                volumeClaimTemplate:
+                  spec:
+                    accessModes:
+                      - ReadWriteOnce
+                    resources:
+                      requests:
+                        storage: 1Gi
+
     - id: register
       name: Registrar no catálogo
       action: catalog:register
