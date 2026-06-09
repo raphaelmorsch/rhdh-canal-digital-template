@@ -73,7 +73,7 @@ spec:
       name: Renderizar artefatos de plataforma
       action: fetch:template
       input:
-        url: ./skeleton
+        url: https://github.com/raphaelmorsch/rhdh-canal-digital-template/tree/main/skeleton
         values:
           componentId: ${{ parameters.componentId }}
           owner: ${{ parameters.owner }}
