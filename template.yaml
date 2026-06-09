@@ -1,7 +1,7 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: onboard-existing-quarkus-openshift
+  name: onboard-existing-quarkus-openshift-v2
   title: Onboard Existing Quarkus App to OpenShift
   description: Cria um repositório GitOps/pipeline e registra uma aplicação Quarkus existente no Developer Hub.
   tags:
