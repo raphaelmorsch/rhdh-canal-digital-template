@@ -3,4 +3,3 @@ resources:
   - secret-example.yaml
   - ksvc.yaml
   - pipeline.yaml
-  - pipelinerun.yaml
