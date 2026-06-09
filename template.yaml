@@ -1,14 +1,15 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: onboard-existing-quarkus-openshift-v2
+  name: onboard-existing-quarkus-openshift-v3
   title: Onboard Existing Quarkus App to OpenShift
-  description: Cria um repositório GitOps/pipeline e registra uma aplicação Quarkus existente no Developer Hub.
+  description: Cria um repositório GitOps/pipeline, cria Application no ArgoCD e registra uma aplicação Quarkus existente no Developer Hub.
   tags:
     - quarkus
     - openshift
     - gitops
     - golden-template
+
 spec:
   owner: platform-team
   type: service
@@ -83,6 +84,10 @@ spec:
           imageStreamName: ${{ parameters.imageStreamName }}
           routeEnabled: ${{ parameters.routeEnabled }}
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          repoUrl: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}.git
+          argoNamespace: openshift-gitops
+          argoProject: default
+          argoPath: ./app-of-apps
 
     - id: publish
       name: Publicar repositório GitOps
@@ -92,6 +97,16 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: main
         repoVisibility: public
+
+    - id: create-argocd-resources
+      name: Criar recursos no ArgoCD
+      action: argocd:create-resources
+      input:
+        appName: ${{ parameters.componentId }}-app-of-apps
+        argoInstance: default
+        namespace: openshift-gitops
+        repoUrl: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}.git
+        path: ./app-of-apps
 
     - id: register
       name: Registrar no catálogo
@@ -104,6 +119,8 @@ spec:
     links:
       - title: Repositório GitOps criado
         url: ${{ steps.publish.output.remoteUrl }}
+      - title: Aplicação ArgoCD
+        url: ${{ steps.create-argocd-resources.output.appUrl }}
       - title: Componente no catálogo
         icon: catalog
         entityRef: ${{ steps.register.output.entityRef }}
