@@ -54,6 +54,32 @@ spec:
         - name: output
           workspace: workspace
 
+    - name: sast
+      runAfter:
+        - fetch-repository
+      taskRef:
+        name: semgrep-sast
+      params:
+        - name: CONFIG
+          value: p/java
+        - name: FAIL_ON_FINDINGS
+          value: "true"
+      workspaces:
+        - name: source
+          workspace: workspace
+
+    - name: maven-tests
+      runAfter:
+        - sast
+      taskRef:
+        name: maven-tests
+      params:
+        - name: GOALS
+          value: verify
+      workspaces:
+        - name: source
+          workspace: workspace
+
     - name: build
       runAfter:
         - fetch-repository

@@ -3,3 +3,5 @@ resources:
   - secret-example.yaml
   - ksvc.yaml
   - pipeline.yaml
+  - tasks/semgrep-sast.yaml
+  - tasks/maven-tests.yaml
