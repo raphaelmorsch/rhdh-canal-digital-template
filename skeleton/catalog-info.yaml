@@ -12,6 +12,10 @@ metadata:
     - java17
     - openshift
     - serverless
+  links:
+    - url: https://devspaces.apps.cluster-4bll2.dynamic2.redhatworkshops.io/#https://github.com/raphaelmorsch/canal-digital-quarkus.git
+      title: Open in Dev Spaces
+      icon: web
 spec:
   type: service
   lifecycle: development
