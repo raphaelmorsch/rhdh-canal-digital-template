@@ -2,3 +2,5 @@ resources:
   - configmap.yaml
   - secret-example.yaml
   - ksvc.yaml
+  - pipeline.yaml
+  - pipelinerun.yaml

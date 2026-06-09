@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: ${{ values.componentId }}-
+  labels:
+    app.kubernetes.io/name: ${{ values.componentId }}
+spec:
+  pipelineRef:
+    name: ${{ values.componentId }}
+  workspaces:
+    - name: workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
