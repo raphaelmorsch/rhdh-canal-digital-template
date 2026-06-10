@@ -82,7 +82,7 @@ spec:
 
     - name: build
       runAfter:
-        - fetch-repository
+        - maven-tests
       taskRef:
         resolver: cluster
         params:

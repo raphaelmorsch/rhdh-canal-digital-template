@@ -22,4 +22,4 @@ spec:
   type: service
   lifecycle: development
   owner: ${{ values.owner }}
-  system: canal-digital
+  
